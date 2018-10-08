@@ -25,7 +25,13 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> find_words(test_text, 'de')
 # {'izdere', 'debel', 'oddide', 'začudeno'}
 ###############################################################################
-
+def find_words(niz, podniz):
+    mnozica = set()
+    seznam = niz.split()
+    for beseda in seznam:
+        if podniz in beseda:
+            mnozica.add(beseda)
+    return mnozica
 
 ###############################################################################
 # 2) Sestavite funkcijo [find_prefix], ki vrne množico vseh besed, ki se
@@ -34,6 +40,18 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> find_prefix(test_text, 'zi')
 # {'zibala', 'zibel', 'zibelko'}
 ###############################################################################
+import re
+def find_prefix(niz, predpona):
+    m = set()
+    vzorec = r"\b" + predpona + r"\w*"
+    match = re.findall(vzorec, niz)
+    for x in match:
+        m.add(x)
+    return m
+
+    
+
+
 
 
 ###############################################################################
@@ -43,6 +61,15 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> find_suffix(test_text, 'la')
 # {'zibala', 'razveselila', 'prestrašila', 'šivala', 'opazila', 'tla'}
 ###############################################################################
+import re
+def find_suffix(niz, pripona):
+    m = set()
+    vzorec = r"\w*" + pripona
+    match = re.findall(vzorec, niz)
+    for x in match:
+        m.add(x)
+    return m
+    
 
 
 ###############################################################################
@@ -52,3 +79,12 @@ medved. Zvrhano zibelko sladkih hrušk mi je prinesel za en sam izdrt trn"."""
 # >>> double_letters('A volunteer is worth twenty pressed men.')
 # {'volunteer', 'pressed'}
 ###############################################################################
+def double_letters(niz):
+    m = set()
+    vzorec = r"(\w)\1*"
+    match = re.findall(vzorec, niz)
+    for x in match:
+        m.add(x)
+    return m
+
+
