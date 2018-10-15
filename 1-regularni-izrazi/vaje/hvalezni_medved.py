@@ -79,12 +79,10 @@ def find_suffix(niz, pripona):
 # >>> double_letters('A volunteer is worth twenty pressed men.')
 # {'volunteer', 'pressed'}
 ###############################################################################
+import re
 def double_letters(niz):
-    m = set()
-    vzorec = r"(\w)\1*"
-    match = re.findall(vzorec, niz)
-    for x in match:
-        m.add(x)
+    vzorec = r"\b\w*(\w)\1\w*\b"
+    m = re.findall(vzorec,niz)
     return m
 
 
