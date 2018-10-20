@@ -90,12 +90,17 @@ vzorec = re.compile(
     r'<div class="price">(?P<cena>.+?)</div>'
     re.DOTALL
 )
-def get_dict_from_ad_block(TODO):
 
-    
+podatki_oglasov = []
+def get_dict_from_ad_block(directory, filename):
     '''Build a dictionary containing the name, description and price
     of an ad block.'''
-    return TODO
+    seznam_oglasov = page_to_ads(directory, filename)
+    for oglas in seznam_oglasov:
+        for ujemanje in vzorec.finditer(oglas):
+            podatki_oglasa = ujemanje.group(0)
+            podatki_oglasov.append(podatki_oglasa)
+    return podatki_oglasov
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o
