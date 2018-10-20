@@ -41,17 +41,20 @@ def find_words(niz, podniz):
 # {'zibala', 'zibel', 'zibelko'}
 ###############################################################################
 import re
+#def find_prefix(niz, predpona):
+#    m = set()
+#    vzorec = r"\b" + predpona + r"\w*"
+#    match = re.findall(vzorec, niz)
+#    for x in match:
+#        m.add(x)
+#    return m
+
 def find_prefix(niz, predpona):
     m = set()
     vzorec = r"\b" + predpona + r"\w*"
-    match = re.findall(vzorec, niz)
-    for x in match:
-        m.add(x)
+    for ujemanje in re.finditer(vzorec, niz, re.DOTALL):
+        m.add(ujemanje.group(0))
     return m
-
-    
-
-
 
 
 ###############################################################################
@@ -65,9 +68,8 @@ import re
 def find_suffix(niz, pripona):
     m = set()
     vzorec = r"\w*" + pripona
-    match = re.findall(vzorec, niz)
-    for x in match:
-        m.add(x)
+    for ujemanje in re.finditer(vzorec, niz, re.DOTALL):
+        m.add(ujemanje.group(0))
     return m
     
 
@@ -81,8 +83,10 @@ def find_suffix(niz, pripona):
 ###############################################################################
 import re
 def double_letters(niz):
+    m = set()
     vzorec = r"\b\w*(\w)\1\w*\b"
-    m = re.findall(vzorec,niz)
+    for ujemanje in re.finditer(vzorec, niz, re.DOTALL):
+        m.add(ujemanje.group(0))
     return m
 
 
