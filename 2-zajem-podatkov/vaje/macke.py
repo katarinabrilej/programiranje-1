@@ -49,10 +49,10 @@ def save_frontpage(url, ime_datoteke):
     '''Save "cats_frontpage_url" to the file
     "cat_directory"/"frontpage_filename"'''
 
-    r = requests.get(url)
+    vsebina =  download_url_to_string(url)
 
     with open(ime_datoteke, 'w', encoding='utf-8') as datoteka:
-            datoteka.write(r.text)
+            datoteka.write(vsebina)
     print('shranjeno!')
     
 
@@ -71,45 +71,54 @@ def read_file_to_string(directory, ime_datoteke):
 # pomočjo regularnih izrazov, ki označujejo začetek in konec posameznega
 # oglasa. Funkcija naj vrne seznam nizov.
 
-
 def page_to_ads(directory, ime_datoteke):
     '''Split "page" to a list of advertisement blocks.'''
-    datoteka = read_file_to_string(directory, ime_datoteke)
+    vsebina = read_file_to_string(directory, ime_datoteke)
     seznam_oglasov = []
     vzorec = r'<div class="ad.*?">' + r'.*?' + r'<div class="clear"></div>'
-    for ujemanje in re.finditer(vzorec, datoteka, re.DOTALL):
+    for ujemanje in re.finditer(vzorec, vsebina, re.DOTALL):
         nas_oglas = ujemanje.group(0)
         seznam_oglasov.append(nas_oglas)
     return seznam_oglasov
     
-    # Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
+# Definirajte funkcijo, ki sprejme niz, ki predstavlja oglas, in izlušči
 # podatke o imenu, ceni in opisu v oglasu.
 
+#r'<table><tr><td><a title="(?P<ime>\w+)'
 vzorec = re.compile(
-    r'<table><tr><td><a title="(?P<ime>\w+)'
-    r'<div class="price">(?P<cena>.+?)</div>'
+    r'</a></h3>(?P<opis>.*?) <div class="additionalInfo">.*?'
+    r'<div class="price">(?P<cena>.*?)</div>.*?',
     re.DOTALL
 )
 
+#?????
+def izloci_podatke_oglasa(ujemanje_oglasa):
+    podatki_oglasa = ujemanje_oglasa.groupdict()
+    podatki_oglasa['opis'] = podatki_oglasa['opis'].strip()
+    return podatki_oglasa
+
 podatki_oglasov = []
+#to bo seznam slovarjev
+
+#?????
 def get_dict_from_ad_block(directory, filename):
     '''Build a dictionary containing the name, description and price
     of an ad block.'''
     seznam_oglasov = page_to_ads(directory, filename)
     for oglas in seznam_oglasov:
         for ujemanje in vzorec.finditer(oglas):
-            podatki_oglasa = ujemanje.group(0)
-            podatki_oglasov.append(podatki_oglasa)
+            podatki_oglasov.append(izloci_podatke_oglasa(ujemanje))
     return podatki_oglasov
 
 # Definirajte funkcijo, ki sprejme ime in lokacijo datoteke, ki vsebuje
 # besedilo spletne strani, in vrne seznam slovarjev, ki vsebujejo podatke o
 # vseh oglasih strani.
 
-
-def ads_from_file(TODO):
+#?????
+def ads_from_file(directory, filename):
     '''Parse the ads in filename/directory into a dictionary list.'''
-    return TODO
+    slovar_oglasov = get_dict_from_ad_block(directory, filename)
+    return slovar_oglasov
 
 ###############################################################################
 # Obdelane podatke želimo sedaj shraniti.
@@ -134,5 +143,8 @@ def write_csv(fieldnames, rows, directory, filename):
 # stolpce [fieldnames] pridobite iz slovarjev.
 
 
-def write_cat_ads_to_csv(TODO):
-    return TODO
+def write_cat_ads_to_csv(directory, filename,csv):
+    rows =  ads_from_file(directory, filename)
+    fieldnames = ["opis","cena"]
+    write_csv(fieldnames, rows, directory, csv_filename)
+    #return TODO
