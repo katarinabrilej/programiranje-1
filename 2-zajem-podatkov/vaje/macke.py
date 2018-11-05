@@ -87,7 +87,7 @@ def page_to_ads(directory, ime_datoteke):
 #r'<table><tr><td><a title="(?P<ime>\w+)'
 vzorec = re.compile(
     r'</a></h3>(?P<opis>.*?) <div class="additionalInfo">.*?'
-    r'<div class="price">(?P<cena>.*?)</div>.*?',
+    r'<div class="price">(<span>)?(?P<cena>.*?)(</span>)?</div>.*?',
     re.DOTALL
 )
 
