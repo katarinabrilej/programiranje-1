@@ -9,7 +9,23 @@
  - : int = 3
 [*----------------------------------------------------------------------------*)
 
-let rec penultimate_element = ()
+let rec ultimate_element list = 
+  match list with
+  | [] -> failwith "List too short" (*ce je seznam prazen*)
+  | y :: [] -> y
+  | x :: ys -> ultimate_element (ys)
+
+let rec penultimate_element list = 
+  match list with
+  | [] -> failwith "List too short" (*ce je seznam prazen*)
+  | x :: [] -> failwith "List too short" (*ce ima seznam natanko eno vrednost*)
+  | x :: y :: [] -> x (*ce ima seznam natanko dva elementa*)
+  | x :: y :: ys -> penultimate_element (y :: ys)
+
+let rec penultimate_element = function
+  | [] | _ :: [] -> failwith "List too short"  (*ker imamo enak ukaz za dva vzorca, lahko damo kar skupaj in ločimo z | *)
+  | x :: _ :: [] -> x (*y nadomestimo z _ ker nam je vseeno kaj je za x, samo da je en element*)
+  | _ :: y :: ys -> penultimate_element (y :: ys)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [get k list] poišče [k]-ti element v seznamu [list]. Številčenje
@@ -19,17 +35,30 @@ let rec penultimate_element = ()
  # get 2 [0; 0; 1; 0; 0; 0];;
  - : int = 1
 [*----------------------------------------------------------------------------*)
+(*function uporabimo, ko imamo smao zadnji element ki ga bomo takoj matchali in ga sicer ne bomo rabili*)
+let rec get k list =
+  match k, list with 
+  | _, [] -> failwith "List too short"
+  | k, x :: xs when k <= 0 -> x (*vrnemo nicti element, ce je k <= 0, sicer gremo rekurzivno naprej*)
+  | k, x :: xs -> get (k - 1) xs
 
-let rec get = ()
+let rec get k  = function (*v resnici bomo matchali samo list, sploh ne rabimo k, zato napišemo function in zbrišemo list kot argument, 
+ocaml ve da bo dobil list za match iz vzorcev*)
+  | [] -> failwith "List too short"
+  | x :: xs when k <= 0 -> x 
+  | x :: xs -> get (k - 1) xs
 
 (*----------------------------------------------------------------------------*]
  Funkcija [double] podvoji pojavitve elementov v seznamu.
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
- # podvoji [1; 2; 3];;
+ # double [1; 2; 3];;
  - : int list = [1; 1; 2; 2; 3; 3]
 [*----------------------------------------------------------------------------*)
 
-let rec double = ()
+let rec double = function
+| [] -> []
+| x :: [] -> x :: x :: []
+| x :: xs -> x :: x :: double xs
 
 (*----------------------------------------------------------------------------*]
  Funkcija [divide k list] seznam razdeli na dva seznama. Prvi vsebuje prvih [k]
@@ -42,7 +71,15 @@ let rec double = ()
  - : int list * int list = ([1; 2; 3; 4; 5], [])
 [*----------------------------------------------------------------------------*)
 
-let rec divide = ()
+let rec divide k list = 
+  match k, list with
+  | k, list when (k <= 0) -> ([], list)
+  | k, [] -> ([],[])
+  | k, x :: xs ->
+    let (left_list, right_list) = divide (k-1) xs in 
+    (*vemo, da rezultat dobimo v obliki para = tuple*, zato lahko razdelimo na dva dela*)
+    (x :: left_list, right_list)
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [delete k list] iz seznama izbriše [k]-ti element. V primeru
@@ -52,7 +89,12 @@ let rec divide = ()
  - : int list = [0; 0; 0; 0; 0]
 [*----------------------------------------------------------------------------*)
 
-let rec delete = ()
+let rec delete k list = 
+  match k, list with
+  | k, [] -> failwith "List too short"
+  | k, list when (k < 0) -> list
+  | 0, x :: xs -> xs
+  | k, x :: xs -> x :: delete (k-1) xs
 
 (*----------------------------------------------------------------------------*]
  Funkcija [slice i k list] sestavi nov seznam, ki vsebuje elemente seznama
@@ -63,7 +105,14 @@ let rec delete = ()
  - : int list = [1; 2; 3]
 [*----------------------------------------------------------------------------*)
 
-let rec slice = ()
+let rec slice i k list = 
+  match i, k, list with
+  | i ,k, [] -> []
+  | i, k , list ->
+    let (levi, desni) = divide (i) list in
+    let (levi2, desni2) = divide (i+k) desni in
+    desni
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [insert x k list] na [k]-to mesto seznama [list] vrine element [x].
