@@ -110,8 +110,8 @@ let rec slice i k list =
   | i ,k, [] -> []
   | i, k , list ->
     let (levi, desni) = divide (i) list in
-    let (levi2, desni2) = divide (i+k) desni in
-    desni
+    let (levi2, desni2) = divide (k-i) desni in
+    levi2
 
 
 (*----------------------------------------------------------------------------*]
@@ -124,7 +124,11 @@ let rec slice i k list =
  - : int list = [1; 0; 0; 0; 0; 0]
 [*----------------------------------------------------------------------------*)
 
-let rec insert = ()
+let rec insert x k list = 
+  match x, k, list with
+  | x, k, [] -> []
+  | x, k, list when k <= 0 -> x :: list
+  | x, k, head :: tail -> head :: insert x (k-1) tail
 
 (*----------------------------------------------------------------------------*]
  Funkcija [rotate n list] seznam zavrti za [n] mest v levo. Predpostavimo, da
@@ -134,7 +138,10 @@ let rec insert = ()
  - : int list = [3; 4; 5; 1; 2]
 [*----------------------------------------------------------------------------*)
 
-let rec rotate = ()
+let rec rotate n list = 
+  let (levi, desni) = divide (n) list in 
+  desni @ levi
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [remove x list] iz seznama izbriše vse pojavitve elementa [x].
@@ -143,7 +150,10 @@ let rec rotate = ()
  - : int list = [2; 3; 2; 3]
 [*----------------------------------------------------------------------------*)
 
-let rec remove = ()
+let rec remove x = function 
+  | [] -> []
+  | head :: tail -> if head = x then remove x tail else head :: remove x tail
+  
 
 (*----------------------------------------------------------------------------*]
  Funkcija [is_palindrome] za dani seznam ugotovi ali predstavlja palindrom.
@@ -154,8 +164,15 @@ let rec remove = ()
  # is_palindrome [0; 0; 1; 0];;
  - : bool = false
 [*----------------------------------------------------------------------------*)
+let rec reverse = function
+| [] -> []
+| x :: xs -> reverse xs @ [x]
 
-let rec is_palindrome = ()
+let is_palindrome list = 
+  let reversed = reverse list in 
+  list = reversed 
+
+
 
 (*----------------------------------------------------------------------------*]
  Funkcija [max_on_components] sprejme dva seznama in vrne nov seznam, katerega
@@ -166,7 +183,11 @@ let rec is_palindrome = ()
  - : int list = [5; 4; 3; 3; 4]
 [*----------------------------------------------------------------------------*)
 
-let rec max_on_components = ()
+let rec max_on_components list1 list2 = 
+  match list1, list2 with
+  | [], _ -> []
+  | _, [] -> []
+  | x :: xs, y :: ys -> if x > y then x :: max_on_components xs ys else y :: max_on_components xs ys
 
 (*----------------------------------------------------------------------------*]
  Funkcija [second_largest] vrne drugo največjo vrednost v seznamu. Pri tem se
@@ -177,5 +198,13 @@ let rec max_on_components = ()
  # second_largest [1; 10; 11; 11; 5; 4; 10];;
  - : int = 10
 [*----------------------------------------------------------------------------*)
+let rec largest list = 
+  match list with
+  | [] -> failwith "List is too short."
+  | x :: [] -> x
+  | x :: xs -> max x (largest xs) 
 
-let rec second_largest = ()
+let rec second_largest list = 
+  let krajsi = remove (largest list) list in
+  largest krajsi
+
