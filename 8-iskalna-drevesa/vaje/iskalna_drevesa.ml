@@ -161,7 +161,14 @@ let rec member n tree =
 
 let rec insert n = function
     | Empty -> Node(Empty, n, Empty)
-    | Node(lt, x, rt) -> if n > x then Node(insert n rt) else Node(insert n lt)
+    | Node(lt, x, rt) ->  
+        if n < x then
+            let new_lt = insert n lt in 
+            Node(new_lt, x, rt)
+        else
+            let new_rt = insert n rt in 
+            Node(lt, x, new_rt)
+
 
 
 (*----------------------------------------------------------------------------*]
@@ -170,7 +177,12 @@ let rec insert n = function
  Opomba: Premislte kolikšna je časovna zahtevnost funkcije [member] in kolikšna
  funkcije [member2] na drevesu z n vozlišči, ki ima globino log(n). 
 [*----------------------------------------------------------------------------*)
-
+let rec member2 n tree =
+    let rec member' n = function
+        | [] -> false
+        | x :: xs -> if n = x then true else member' n xs
+    in
+    member' n (list_of_tree tree)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [succ] vrne naslednjika korena danega drevesa, če obstaja. Za drevo
@@ -185,6 +197,36 @@ let rec insert n = function
  - : int option = None
 [*----------------------------------------------------------------------------*)
 
+let rec minimum tree = 
+    let rec minimum' = function
+    | [] -> failwith "prazno drevo"
+    | x :: [] -> x 
+    | x :: xs -> min x (minimum' xs)
+    in
+    minimum'(list_of_tree tree)
+
+let rec lepi_min = function
+    | Empty -> None
+    | Node(Empty,x,rt) -> Some x 
+    | Node(lt,x,rt) -> lepi_min lt
+
+
+let rec succ = function
+    | Empty -> None
+    | Node(lt, x, Empty) -> None
+    | Node(lt, x, rt) -> lepi_min rt
+
+let rec maximum = function
+    | Empty -> failwith "prazno drevo"
+    | Node(lt,x,Empty) -> x 
+    | Node(lt,x,rt) -> maximum lt
+
+let rec pred = function
+    | Empty -> failwith "Prazno drevo"
+    | Node(Empty, x, rt) -> failwith "ni večjega elementa" 
+    | Node(lt, x, rt) -> maximum lt
+
+
 
 (*----------------------------------------------------------------------------*]
  Na predavanjih ste omenili dva načina brisanja elementov iz drevesa. Prvi 
@@ -198,6 +240,21 @@ let rec insert n = function
  Node (Node (Node (Empty, 0, Empty), 2, Empty), 5,
  Node (Node (Empty, 6, Empty), 11, Empty))
 [*----------------------------------------------------------------------------*)
+let rec delete x tree = 
+    match tree with
+    | Empty -> (*Empty case - prazno drevo*) Empty
+    | Node(Empty, y, Empty) when x = y -> (*leaf case - imamo list in dobim oprazno drevo ko ga izbrišemo*) Empty
+    | Node(Empty, y, rt) when x = y -> (*One sided*) rt
+    | Node(lt, y, Empty) when x = y -> (*One sided*) lt   
+    | Node(lt, y, rt) when x <> y -> (*Recurse deeper*)
+        if x > y then
+            Node(lt, y, delete x rt)
+        else
+            Node(delete x lt, y, rt)
+    | Node(lt, y, rt) -> (*SUPER FUN CASE :D*)
+        match succ tree with
+        | None -> failwith "HOW IS THIS POSSIBLE?!" (*This cannot happen :D*)
+        | Some z -> Node(lt, z, delete z rt) (*v desno drevo gremo poiskat succ in ga prenesemo*)
 
 
 (*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*]
@@ -220,7 +277,12 @@ let rec insert n = function
          /
      "c":-2
 [*----------------------------------------------------------------------------*)
+type ('key, 'value) dict = ('key * 'value) tree
 
+let test_dict = 
+    let lt = Node(Empty,("a",0),Empty) in 
+    let rt = Node(leaf ("c",-2), ("d",2), Empty) in 
+    Node(lt, ("b", 1), rt)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [dict_get key dict] v slovarju poišče vrednost z ključem [key]. Ker
@@ -231,7 +293,10 @@ let rec insert n = function
  # dict_get "c" test_dict;;
  - : int option = Some (-2)
 [*----------------------------------------------------------------------------*)
-
+let rec dict_get key = function
+    | Empty -> None
+    | Node(lt, (k, v), rt) when k = key -> Some v
+    | Node(lt, (k, v), rt) -> if key < k then dict_get key lt else dict_get key rt
       
 (*----------------------------------------------------------------------------*]
  Funkcija [print_dict] sprejme slovar s ključi tipa [string] in vrednostmi tipa
