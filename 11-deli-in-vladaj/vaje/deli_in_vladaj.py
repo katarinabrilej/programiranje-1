@@ -21,7 +21,7 @@
 # Primer:
 #
 #     >>> a = [10, 4, 5, 15, 11, 2, 17, 0, 18]
-#     >>> pivot(a, 1, 7)
+#     >>> pivot(a, 1, 7) # pivotiramo samo tabelo med indeksoma 1 in 7 in ne cele
 #     3
 #     >>> a
 #     [10, 2, 0, 4, 11, 15, 17, 5, 18]
