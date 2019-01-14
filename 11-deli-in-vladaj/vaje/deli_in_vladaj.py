@@ -9,7 +9,7 @@
 #
 # preuredimo v
 #
-# [0, 2, 5, 4, 10, 11, 17, 15, 18]
+# [0, 2, 5, 4, 10, 1                                             1, 17, 15, 18]
 #
 # (Možnih je več različnih rešitev, pomembno je, da je element 10 pivot.)
 #
