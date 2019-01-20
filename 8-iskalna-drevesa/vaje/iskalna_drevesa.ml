@@ -51,7 +51,7 @@ let test_tree =
 [*----------------------------------------------------------------------------*)
 let rec mirror tree = 
     match tree with
-    | Empty -> Empty (*prazno podrevo ne rabimo zrcalit ker je itak prazno*)
+    | Empty -> Empty (*prazno podrevo ne rabimo zrcalit, ker je itak prazno*)
     | Node(lt, x, rt) -> Node(mirror rt, x, mirror lt)
 
 (*----------------------------------------------------------------------------*]
@@ -159,6 +159,12 @@ let rec member n tree =
     in
     member' n (list_of_tree tree)
 
+let rec member n = function
+    | Empty -> false
+    | Node(lt,x,rt) when n == x -> true 
+    | Node(lt,x,rt) when n < x -> member n lt
+    | Node(lt,x,rt) when n > x -> member n rt
+
 let rec insert n = function
     | Empty -> Node(Empty, n, Empty)
     | Node(lt, x, rt) ->  
@@ -168,8 +174,6 @@ let rec insert n = function
         else
             let new_rt = insert n rt in 
             Node(lt, x, new_rt)
-
-
 
 (*----------------------------------------------------------------------------*]
  Funkcija [member2] ne privzame, da je drevo bst.
@@ -183,6 +187,10 @@ let rec member2 n tree =
         | x :: xs -> if n = x then true else member' n xs
     in
     member' n (list_of_tree tree)
+
+let rec member2 x = function
+    | Empty -> false
+    | Node(l, y, r) -> x = y || (member2 x l) || (member2 x r)
 
 (*----------------------------------------------------------------------------*]
  Funkcija [succ] vrne naslednjika korena danega drevesa, če obstaja. Za drevo
@@ -219,11 +227,11 @@ let rec succ = function
 let rec maximum = function
     | Empty -> failwith "prazno drevo"
     | Node(lt,x,Empty) -> x 
-    | Node(lt,x,rt) -> maximum lt
+    | Node(lt,x,rt) -> maximum rt
 
 let rec pred = function
     | Empty -> failwith "Prazno drevo"
-    | Node(Empty, x, rt) -> failwith "ni večjega elementa" 
+    | Node(Empty, x, rt) -> failwith "ni manjšega elementa" 
     | Node(lt, x, rt) -> maximum lt
 
 
