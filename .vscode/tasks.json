@@ -16,5 +16,18 @@
             ]
   
         }
+        {
+            "label": "run file in python",
+            "type": "shell",
+            "command": "python",
+            "args": [
+                "-i",
+                {
+                 "value": "${file}",
+                 "quoting": "escape"   
+                }
+            ]
+  
+        }
     ]
 }
