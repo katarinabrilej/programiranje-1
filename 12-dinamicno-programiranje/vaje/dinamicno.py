@@ -41,7 +41,29 @@ def max_cheese(matrika):
 #  - : int = 35
 # [*----------------------------------------------------------------------------*)
 
-#def alternating_towers()
+def alternating_towers(n,color):
+    if color == "blue":
+        if n == 0:
+            return 1
+        elif n < 0:
+            return 0
+        else:
+            return alternating_towers(n-2,"red") + alternating_towers(n-3,"red")
+    else:
+        if n == 0:
+            return 1
+        elif n < 0:
+            return 0
+        else:
+            return alternating_towers(n-1,"blue") + alternating_towers(n-2,"blue")
+def k(n):
+    if n == 0:
+        return 1
+    else:
+        return alternating_towers(n,"red")  + alternating_towers(n,"blue")
+    
+
+# uradna rešitev
 
 # (*----------------------------------------------------------------------------*]
 #  Na nagradni igri ste zadeli kupon, ki vam omogoča, da v Mercatorju kupite
